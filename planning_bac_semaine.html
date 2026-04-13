@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planning Bac — Sciences Physiques</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg2: #f5f4f0;
+    --bg3: #efede8;
+    --text: #1a1a18;
+    --text2: #6b6a65;
+    --text3: #9a9890;
+    --border: rgba(0,0,0,0.1);
+    --border2: rgba(0,0,0,0.18);
+    --green: #1D9E75;
+    --green-bg: #E1F5EE;
+    --green-text: #0F6E56;
+    --blue-bg: #E6F1FB;
+    --blue-text: #0C447C;
+    --green2-bg: #EAF3DE;
+    --green2-text: #27500A;
+    --purple-bg: #EEEDFE;
+    --purple-text: #3C3489;
+    --pink: #D4537E;
+    --amber-bg: #FAEEDA;
+    --amber-text: #633806;
+    --r-md: 8px;
+    --r-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a;
+      --bg2: #252522;
+      --bg3: #2e2e2a;
+      --text: #e8e6de;
+      --text2: #9a9890;
+      --text3: #6b6a65;
+      --border: rgba(255,255,255,0.1);
+      --border2: rgba(255,255,255,0.18);
+      --green-bg: #085041;
+      --green-text: #9FE1CB;
+      --blue-bg: #0C447C;
+      --blue-text: #B5D4F4;
+      --green2-bg: #27500A;
+      --green2-text: #C0DD97;
+      --purple-bg: #3C3489;
+      --purple-text: #CECBF6;
+      --amber-bg: #412402;
+      --amber-text: #FAC775;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg3); color: var(--text); min-height: 100vh; }
+  .page { max-width: 720px; margin: 0 auto; padding: 32px 16px 48px; }
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: var(--text2); margin-bottom: 24px; }
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; margin-bottom: 20px; }
+  .stat { background: var(--bg); border-radius: var(--r-lg); padding: 12px; text-align: center; border: 0.5px solid var(--border); }
+  .stat-n { font-size: 22px; font-weight: 600; line-height: 1; }
+  .stat-l { font-size: 11px; color: var(--text2); margin-top: 4px; }
+  .warn { background: var(--amber-bg); border-radius: var(--r-lg); padding: 10px 14px; font-size: 12px; color: var(--amber-text); margin-bottom: 16px; line-height: 1.6; }
+  .legend { display: flex; gap: 14px; margin-bottom: 16px; font-size: 12px; color: var(--text2); flex-wrap: wrap; }
+  .leg { display: flex; align-items: center; gap: 6px; }
+  .leg-dot { width: 12px; height: 12px; border-radius: 3px; }
+  .plabel { font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+  .pbar { height: 5px; background: var(--border); border-radius: 3px; margin-bottom: 20px; overflow: hidden; }
+  .pfill { height: 100%; background: var(--green); border-radius: 3px; transition: width .4s; }
+  .nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .db { padding: 6px 14px; border-radius: 20px; border: 0.5px solid var(--border2); font-size: 13px; cursor: pointer; background: var(--bg2); color: var(--text2); transition: all .15s; white-space: nowrap; font-family: inherit; }
+  .db:hover { background: var(--bg); }
+  .db.active { background: var(--text); color: var(--bg); border-color: transparent; font-weight: 500; }
+  .db.done { border-color: var(--green); color: var(--green-text); background: var(--green-bg); }
+  .db.done.active { background: var(--green); color: #fff; }
+  .card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--r-lg); padding: 16px 18px; }
+  .card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; gap: 8px; }
+  .card-title { font-size: 16px; font-weight: 600; }
+  .card-sub { font-size: 12px; color: var(--text2); margin-top: 3px; }
+  .badge { font-size: 11px; padding: 3px 10px; border-radius: 10px; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
+  .bp { background: var(--blue-bg); color: var(--blue-text); }
+  .bc { background: var(--green2-bg); color: var(--green2-text); }
+  .bm { background: var(--purple-bg); color: var(--purple-text); }
+  .slots { display: flex; flex-direction: column; gap: 7px; }
+  .slot { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--r-md); padding: 10px 13px; display: flex; gap: 10px; align-items: flex-start; cursor: pointer; transition: border-color .15s; user-select: none; }
+  .slot:hover { border-color: var(--border2); }
+  .slot.ck { border-color: var(--green); opacity: .6; }
+  .slot.pause { cursor: default; opacity: .4; }
+  .slot.philo { border-left: 3px solid var(--pink); padding-left: 10px; }
+  .stime { font-size: 11px; color: var(--text3); min-width: 74px; padding-top: 2px; line-height: 1.4; flex-shrink: 0; }
+  .sinfo { flex: 1; }
+  .stitle { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+  .sdet { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .scheck { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border2); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+  .slot.ck .scheck { background: var(--green); border-color: var(--green); }
+  .cm { font-size: 11px; color: #fff; display: none; font-weight: 600; }
+  .slot.ck .cm { display: block; }
+  .tip { border-left: 3px solid #378ADD; border-radius: 0 var(--r-md) var(--r-md) 0; background: var(--bg); padding: 9px 13px; margin-top: 14px; font-size: 12px; color: var(--text2); line-height: 1.6; }
+  .tip b { color: var(--text); font-weight: 500; }
+  @media print {
+    .nav, .warn, .pbar, .plabel { display: none; }
+    .slot { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Planning révision — Bac Sciences Physiques</h1>
+  <p class="subtitle">2ème Bac · 41 chapitres en 7 jours · 19h–minuit lun–ven · Sam 17h–21h · Dim journée</p>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-n" style="color:#378ADD">29</div><div class="stat-l">Chapitres PC</div></div>
+    <div class="stat"><div class="stat-n" style="color:#D4537E">12</div><div class="stat-l">Cours philo</div></div>
+    <div class="stat"><div class="stat-n">~31h</div><div class="stat-l">Heures dispo</div></div>
+    <div class="stat"><div class="stat-n" id="stat-p">0%</div><div class="stat-l">Complété</div></div>
+  </div>
+
+  <div class="warn">⚡ <b>Mode urgence ·</b> 45–50 min par chapitre PC · 30 min par cours philo · Pauses respectées · Dors avant 1h</div>
+
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:#378ADD"></div>Physique-Chimie</div>
+    <div class="leg"><div class="leg-dot" style="background:#D4537E"></div>Philosophie</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--border)"></div>Pause</div>
+  </div>
+
+  <div class="plabel" id="plabel">Progression · 0 / 0 blocs complétés</div>
+  <div class="pbar"><div class="pfill" id="pfill" style="width:0%"></div></div>
+
+  <div class="nav" id="nav"></div>
+  <div id="content"></div>
+</div>
+
+<script>
+const days=[
+{id:"lun",label:"Lundi",sub:"19h–minuit · 5h",badge:"bp",btext:"Physique",
+tip:"Commence toujours par la physique quand le cerveau est frais. La philo en fin de soirée = mémorisation passive qui travaille pendant le sommeil.",
+slots:[
+{t:"19h–19h50",title:"Ch.1 — Ondes mécaniques progressives",det:"Célérité v, retard τ=d/v · double périodicité spatiale et temporelle · équation d'onde"},
+{t:"19h50–20h40",title:"Ch.2 — Ondes mécaniques périodiques",det:"Période T, fréquence f=1/T, longueur d'onde λ=vT · onde sinusoïdale · représentations graphiques"},
+{t:"20h40–20h50",title:"Pause",det:"",pause:true},
+{t:"20h50–21h40",title:"Ch.3 — Propagation des ondes lumineuses",det:"Indice de réfraction n=c/v · loi de Snell-Descartes · réflexion totale · dispersion · spectre"},
+{t:"21h40–22h10",title:"Philo — cours 1",det:"30 min · lecture active · fiche résumé 5 lignes max · pas de copie mot à mot",philo:true},
+{t:"22h10–22h20",title:"Pause",det:"",pause:true},
+{t:"22h20–22h50",title:"Philo — cours 2",det:"30 min · même méthode · relis la fiche du cours 1 avant de dormir",philo:true},
+{t:"22h50–23h00",title:"Relecture fiches du jour",det:"Fiches PC + philo · 2 min par fiche · ancrage mémoriel avant sommeil"},
+]},
+{id:"mar",label:"Mardi",sub:"19h–minuit · 5h",badge:"bc",btext:"Chimie",
+tip:"Ch.4+5 forment un bloc cinétique, ch.8+9 forment un bloc équilibre. Deux mini-thèmes bien distincts.",
+slots:[
+{t:"19h–19h50",title:"Ch.4 — Transformations lentes et rapides",det:"Énergie d'activation Ea · facteurs cinétiques (T, concentration, catalyseur) · exemples"},
+{t:"19h50–20h40",title:"Ch.5 — Vitesse de réaction",det:"v=(1/V)·dξ/dt · loi de vitesse · ordre 0,1,2 · méthodes de suivi (pH, conductance, colorimétrie)"},
+{t:"20h40–20h50",title:"Pause",det:"",pause:true},
+{t:"20h50–21h40",title:"Ch.8 — Transformations dans les 2 sens",det:"Réaction réversible · taux d'avancement final τ · état d'équilibre · quotient de réaction Qr"},
+{t:"21h40–22h30",title:"Ch.9 — État d'équilibre chimique",det:"Constante d'équilibre K · Qr vs K → sens d'évolution · principe de Le Chatelier"},
+{t:"22h30–22h40",title:"Pause",det:"",pause:true},
+{t:"22h40–23h10",title:"Philo — cours 3",det:"30 min · fiche résumé",philo:true},
+{t:"23h10–23h40",title:"Philo — cours 4",det:"30 min · fiche résumé · relis les fiches 1 et 2 rapidement",philo:true},
+{t:"23h40–00h00",title:"Relecture fiches du jour",det:"Fiches PC + philo · consolidation avant sommeil"},
+]},
+{id:"mer",label:"Mercredi",sub:"19h–minuit · 5h",badge:"bp",btext:"Physique",
+tip:"Nucléaire + électricité = souvent le même sujet au bac marocain. Maîtrise les calculs de t½ et de τ=RC.",
+slots:[
+{t:"19h–19h50",title:"Ch.6 — Décroissance radioactive",det:"N(t)=N₀·e^(−λt) · demi-vie t½=ln2/λ · activité A=λN · datation au carbone 14"},
+{t:"19h50–20h40",title:"Ch.7 — Noyaux, masse et énergie",det:"Défaut de masse Δm · énergie de liaison Eℓ=Δm·c² · fission · fusion · bilan énergétique"},
+{t:"20h40–20h50",title:"Pause",det:"",pause:true},
+{t:"20h50–21h40",title:"Ch.10 — Dipôle RC",det:"Charge : uc(t)=E(1−e^(−t/τ)) · décharge : uc(t)=E·e^(−t/τ)) · τ=RC · lecture de courbes"},
+{t:"21h40–22h30",title:"Ch.11 — Dipôle RL",det:"Établissement i(t)=E/R·(1−e^(−t/τ)) · τ=L/R · énergie stockée Eℓ=½Li²"},
+{t:"22h30–22h40",title:"Pause",det:"",pause:true},
+{t:"22h40–23h10",title:"Philo — cours 5",det:"30 min · fiche résumé",philo:true},
+{t:"23h10–23h40",title:"Philo — cours 6",det:"30 min · fiche résumé",philo:true},
+{t:"23h40–00h00",title:"Relecture fiches du jour",det:"Fiches PC + philo · consolidation avant sommeil"},
+]},
+{id:"jeu",label:"Jeudi",sub:"19h–minuit · 5h",badge:"bp",btext:"Physique",
+tip:"RLC = chapitre le plus difficile. Prends le temps de bien comprendre l'analogie mécanique-électrique.",
+slots:[
+{t:"19h–19h50",title:"Ch.12 — Oscillations libres RLC",det:"Équation différentielle · oscillations libres amorties · pseudo-période · amortissement · analogie méca/élec"},
+{t:"19h50–20h40",title:"Ch.14 — Ondes EM + modulation",det:"Spectre EM · modulation AM · porteuse + signal · démodulation · bande passante"},
+{t:"20h40–20h50",title:"Pause",det:"",pause:true},
+{t:"20h50–21h40",title:"Ch.15 — Transformations acide-base",det:"Théorie de Brønsted · Ka, pKa · pH acides/bases forts et faibles · ampholytes · domaines de prédominance"},
+{t:"21h40–22h30",title:"Ch.16 — Dosage acido-basique",det:"Titrage pH-métrique et conductimétrique · point d'équivalence · calcul de concentration"},
+{t:"22h30–22h40",title:"Pause",det:"",pause:true},
+{t:"22h40–23h10",title:"Philo — cours 7",det:"30 min · fiche résumé",philo:true},
+{t:"23h10–23h40",title:"Philo — cours 8",det:"30 min · fiche résumé · total philo : 8/12 ✓",philo:true},
+{t:"23h40–00h00",title:"Relecture fiches du jour",det:"Fiches PC + philo · consolidation avant sommeil"},
+]},
+{id:"ven",label:"Vendredi",sub:"19h–minuit · 5h",badge:"bm",btext:"Mixte",
+tip:"Newton + projectile = base du semestre 2. Méthode en 3 étapes : bilan des forces → ΣF=ma → équations horaires.",
+slots:[
+{t:"19h–19h50",title:"Ch.17 — Lois de Newton",det:"Principe d'inertie · ΣF=ma · action-réaction · méthode de résolution · référentiels galiléens"},
+{t:"19h50–20h40",title:"Ch.18 — Chute libre + frottement",det:"Chute sans/avec frottement · vitesse limite vℓ · équations horaires · graphes v(t) et z(t)"},
+{t:"20h40–20h50",title:"Pause",det:"",pause:true},
+{t:"20h50–21h40",title:"Ch.19 — Projectile + particule chargée",det:"Parabole : x=v₀t, y=½gt² · déviation dans champ E ou B · calculs de trajectoire"},
+{t:"21h40–22h30",title:"Ch.20+21 — Évolution spontanée + Piles",det:"Qr vs K · pile : anode (oxydation), cathode (réduction) · f.é.m. E = E⁺ − E⁻"},
+{t:"22h30–22h40",title:"Pause",det:"",pause:true},
+{t:"22h40–23h10",title:"Philo — cours 9",det:"30 min · fiche résumé",philo:true},
+{t:"23h10–23h40",title:"Philo — cours 10",det:"30 min · fiche résumé · total philo : 10/12 ✓",philo:true},
+{t:"23h40–00h00",title:"Relecture fiches du jour",det:"Fiches PC + philo · ancrage final avant le week-end"},
+]},
+{id:"sam",label:"Samedi",sub:"17h–21h · 4h",badge:"bm",btext:"Mixte",
+tip:"Samedi = finir les derniers chapitres PC + les 2 derniers cours philo. Dimanche sera 100% exercices.",
+slots:[
+{t:"17h–17h50",title:"Ch.22+23 — Satellites + Rotation solide",det:"Loi de gravitation · 3ème loi de Kepler T²/a³=cte · moment cinétique · σ=Iα"},
+{t:"17h50–18h40",title:"Ch.25+28+29 — Électrolyse + Estérification",det:"Électrolyse : anode/cathode · estérification/hydrolyse : équilibre, rendement, catalyseur acide"},
+{t:"18h40–18h55",title:"Pause",det:"",pause:true},
+{t:"18h55–19h25",title:"Philo — cours 11",det:"30 min · avant-dernier cours · fiche résumé",philo:true},
+{t:"19h25–19h55",title:"Philo — cours 12 (dernier !)",det:"30 min · fiche résumé finale · tous les cours philo sont faits ✓",philo:true},
+{t:"19h55–20h10",title:"Pause",det:"",pause:true},
+{t:"20h10–21h00",title:"Révision flash — toutes les fiches philo",det:"12 fiches × 4 min = 48 min · lecture rapide à voix haute · ancrage mémoriel complet"},
+]},
+{id:"dim",label:"Dimanche",sub:"Toute la journée · ~9h",badge:"bm",btext:"Jour J-1",
+tip:"Zéro nouveau cours aujourd'hui. Le cerveau consolide ce qu'il a appris — ton rôle c'est de l'activer par les exercices.",
+slots:[
+{t:"09h–10h30",title:"Exos — ondes + lumière + nucléaire",det:"Ch.1-2-3-6-7 · séries bac · sans regarder le cours · chrono"},
+{t:"10h30–12h00",title:"Exos — électricité complète",det:"Ch.10-11-12-14 · RC, RL, RLC, ondes EM · schémas, calculs, lecture de courbes"},
+{t:"12h–14h",title:"Déjeuner + repos",det:"",pause:true},
+{t:"14h–15h30",title:"Exos — chimie",det:"Ch.4-5-8-9-15-16-20-21 · cinétique, équilibres, acide-base, piles · exercices types"},
+{t:"15h30–17h",title:"Exos — mécanique semestre 2",det:"Ch.17-18-19-22-23-25-28-29 · forces, trajectoires, satellites, rotation, électrolyse"},
+{t:"17h–17h30",title:"Pause",det:"",pause:true},
+{t:"17h30–19h00",title:"Points fragiles ciblés",det:"Relis les 3-4 chapitres les moins maîtrisés · fiches formules uniquement · pas de cours complet"},
+{t:"19h–19h45",title:"Relecture flash — 12 fiches philo",det:"4 min par fiche · uniquement les résumés rédigés · ancrage mémoriel final"},
+{t:"19h45–20h00",title:"Stop total — dors tôt",det:"Pose tout · dors tôt · le cerveau reposé vaut plus que 2h de révision épuisée",pause:true},
+]},
+];
+
+let checked={};
+try{const s=localStorage.getItem('bac_planning_v1');if(s)checked=JSON.parse(s);}catch(e){}
+let cur=0;
+
+function allTask(){return days.reduce((a,d)=>a+d.slots.filter(s=>!s.pause).length,0);}
+function doneCount(){return Object.values(checked).filter(Boolean).length;}
+function dayDone(di){return days[di].slots.filter(s=>!s.pause).every((_,si)=>checked[di+'_'+si]);}
+function save(){try{localStorage.setItem('bac_planning_v1',JSON.stringify(checked));}catch(e){}}
+
+function renderNav(){
+  document.getElementById('nav').innerHTML=days.map((d,i)=>{
+    let c='db'+(i===cur?' active':'')+(dayDone(i)?' done':'');
+    return`<button class="${c}" onclick="sel(${i})">${d.label}</button>`;
+  }).join('');
+}
+
+function renderContent(){
+  const d=days[cur];
+  const subtext = d.id==='dim' ? 'Révision générale · exercices blancs · zéro nouveau cours'
+                : d.id==='sam' ? 'Derniers chapitres PC + 2 derniers cours philo'
+                : '~50 min par chapitre · 30 min par cours philo';
+  document.getElementById('content').innerHTML=`
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <div class="card-title">${d.label} — ${d.sub}</div>
+        <div class="card-sub">${subtext}</div>
+      </div>
+      <span class="badge ${d.badge}">${d.btext}</span>
+    </div>
+    <div class="slots">${d.slots.map((s,si)=>{
+      if(s.pause)return`<div class="slot pause"><div class="stime">${s.t}</div><div class="sinfo"><div class="stitle">${s.title||'Pause'}</div>${s.det?`<div class="sdet">${s.det}</div>`:''}</div></div>`;
+      const k=cur+'_'+si, ck=checked[k];
+      const pcls=s.philo?' philo':'';
+      return`<div class="slot${pcls}${ck?' ck':''}" onclick="tog(${cur},${si})">
+        <div class="stime">${s.t}</div>
+        <div class="sinfo"><div class="stitle">${s.title}</div><div class="sdet">${s.det}</div></div>
+        <div class="scheck"><span class="cm">✓</span></div>
+      </div>`;
+    }).join('')}</div>
+    <div class="tip"><b>Conseil :</b> ${d.tip}</div>
+  </div>`;
+}
+
+function updateStats(){
+  const total=allTask(), done=doneCount(), pct=total?Math.round(done/total*100):0;
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('plabel').textContent=`Progression · ${done} / ${total} blocs complétés (${pct}%)`;
+  document.getElementById('stat-p').textContent=pct+'%';
+}
+
+function sel(i){cur=i;renderNav();renderContent();}
+function tog(di,si){const k=di+'_'+si;checked[k]=!checked[k];save();renderNav();renderContent();updateStats();}
+
+renderNav();renderContent();updateStats();
+</script>
+</body>
+</html>
